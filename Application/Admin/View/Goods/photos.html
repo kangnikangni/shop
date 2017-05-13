@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="__ADMIN__/css/style.css" rel="stylesheet" type="text/css" />
+    <script language="JavaScript" src="__ADMIN__/js/jquery.js"></script>
+</head>
+
+<body>
+    <div class="place">
+        <span>位置：</span>
+        <ul class="placeul">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">表单</a></li>
+        </ul>
+    </div>
+    <div class="formbody">
+        <div class="formtitle"><span>商品相册</span></div>
+        <li id="photolist" style="border: 1px solid grey;margin-bottom: 20px;">
+            <volist name='data' id='vol'>
+            <span><img src="{$vol.pics_mid|ltrim='.'}" height="178"><a class="del" data='{$vol.pics_id}' href="javascript:;">[-]</a>&emsp;</span>
+            </volist>
+        </li>
+        <form action="" method="post" enctype="multipart/form-data">
+            <ul class="forminfo">
+                <li>
+                    <label>商品图片[<a href="javascript:;" class="add">+</a>]</label>
+                    <input name="goods_pic[]" type="file" />
+                </li>
+                <!--将新增的文件域放到这里-->
+                <li>
+                    <label>&nbsp;</label>
+                    <input name="" id="btnSubmit" type="button" class="btn" value="确认保存" />
+                </li>
+            </ul>
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+$(function(){
+    $('#btnSubmit').on('click',function(){
+        $('form').submit();
+    });
+    //给+号绑定点击事件
+    $('.add').click(function(){
+        //事件的处理程序（新增一个和之前差不多，但是符号和选择器不一样的文件域）
+        var li = '<li><label>商品图片[<a href="javascript:;" class="remove">-</a>]</label><input name="goods_pic[]" type="file" /></li>';
+        //将内容追加到页面中
+        $(this).parent().parent().after(li);
+    });
+
+    //给-号绑定点击事件
+    $(document).on('click','.remove',function(){
+        //事件处理程序
+        $(this).parent().parent().remove();
+    });
+
+    //异步删除图片
+    $('.del').click(function(){
+        //获取id
+        var pic_id = $(this).attr('data');
+        //先把this保存一份
+        var _this = this;
+        //ajax请求
+        $.ajax({
+            url: "{:U('delpic')}",
+            data: {pic_id: pic_id},
+            type: 'GET',
+            dataType: 'text',
+            success:function(data){
+                //判断是否成功
+                if(data == '1'){
+                    //成功，移除页面上的对应的图片
+                    $(_this).parent().remove();
+                }else{
+                    //失败
+                    alert('你人品有问题');
+                }
+            }
+        });
+    });
+});
+</script>
+</html>
